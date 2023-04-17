@@ -1,4 +1,0 @@
-/home/joel/universidad/automatas-y-lenguajes/automata/build/CMakeFiles/automata.dir
-/home/joel/universidad/automatas-y-lenguajes/automata/build/CMakeFiles/main.dir
-/home/joel/universidad/automatas-y-lenguajes/automata/build/CMakeFiles/edit_cache.dir
-/home/joel/universidad/automatas-y-lenguajes/automata/build/CMakeFiles/rebuild_cache.dir

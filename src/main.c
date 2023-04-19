@@ -1,10 +1,7 @@
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "automata.h"
 
 int main() {
-  int states[] = {0, 1, 2, -1};
+  int num_states = 3;
   char *alphabet = "01\0";
   Transition transitions[] = {
     newTransition(0, 2, '0'),
@@ -18,7 +15,7 @@ int main() {
   int start = 0;
   int final[] = {0, 1, -1};
 
-  Automata a = newAutomata(states, alphabet, transitions, start, final);
+  Automata a = newAutomata(num_states, alphabet, transitions, start, final);
 
   printAutomata(a);
 }

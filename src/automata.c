@@ -1,16 +1,27 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "automata.h"
 
 
-Automata newAutomata(int states[], char alphabet[], Transition transitions[], int start, int finals[]) {
+int codeOf(char c) {
+    return c - 32;
+}
+
+Automata newAutomata(int num_states, char alphabet[], Transition transitions[], int start, int finals[]) {
   Automata a;
-  a.states = states;
+  a.num_states = num_states;
   a.alphabet = alphabet;
   a.transitions = transitions;
+  a.transitions_table[num_states][126-32]; // 126 - 32 is the maximum number of symbols in the alphabet
   a.start = start;
   a.finals = finals;
+
+  Transition transition = transitions[0];
+  int i = 0;
+    while (transition.from >= 0) {
+        a.transitions_table[transition.from][transition.symbol - 32] = transition.to;
+        transition = transitions[++i];
+    }
 
   return a;
 }
@@ -24,6 +35,10 @@ Transition newTransition(int from, int to, char symbol) {
   return t;
 }
 
+int runAutomata(Automata a, char str[]){
+
+}
+
 void printTransition(Transition t) {
   printf("%d --> '%c' --> %d", t.from, t.symbol, t.to);
 }
@@ -31,16 +46,13 @@ void printTransition(Transition t) {
 void printAutomata(Automata a) {
   printf("Q = {");
 
-  int i = 0;
-  int state = a.states[0];
-  while (state >= 0) {
+  for (int state = 0; state < a.num_states; state++) {
     printf("%d, ", state);
-    state = a.states[++i];
   }
-  printf("}\n");
+  printf("%d}\n", a.num_states);
 
   printf("S = {");
-  i = 0;
+  int i = 0;
   char symbol = a.alphabet[0];
   while (symbol != '\0') {
     printf("%c, ", symbol);

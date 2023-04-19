@@ -1,6 +1,17 @@
 cmake_minimum_required(VERSION 3.0)
 project(Automata)
 
-add_library(automata automata.c)
-add_executable(main main.c)
+set(BIN_DIR ${Automata_SOURCE_DIR}/bin)
+set(SRC_DIR ${Automata_SOURCE_DIR}/src)
+set(LIB_DIR ${Automata_SOURCE_DIR}/lib)
+set(INC_DIR ${Automata_SOURCE_DIR}/include)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIB_DIR})
+
+set(CMAKE_BINARY_DIR ${Automata_SOURCE_DIR}/build)
+
+add_library(automata ${SRC_DIR}/automata.c)
+add_executable(main ${SRC_DIR}/main.c)
+target_include_directories(automata PUBLIC ${INC_DIR})
 target_link_libraries(main automata)

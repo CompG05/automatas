@@ -21,6 +21,16 @@ List* newList(){
     return l;
 }
 
+List *newListFrom(int elements[], int n) {
+    List *l = newList();
+    insertAll(l, 0, elements, n);
+    return l;
+}
+
+int isEmpty(List ls){
+    return ls.size == 0;
+}
+
 void insert(List *ls, int position, int i) {
     Node *n = newNode(i);
     Node *current = ls->head;
@@ -61,6 +71,17 @@ int get(List ls, int position) {
         current = current->next;
     }
     return current->data;
+}
+
+int contains(List ls, int i) {
+    Node *current = ls.head->next;
+
+    while (current != NULL) {
+        if (current->data == i)
+            return 1;
+        current = current->next;
+    }
+    return 0;
 }
 
 int delete(List *ls, int position) {

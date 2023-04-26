@@ -1,26 +1,33 @@
+#ifndef AUTOMATA_H
+#define AUTOMATA_H
+
+#include "LinkedList.h"
+
 typedef struct Transition {
   int from;
-  int to;
+  List *to;
   char symbol;
 } Transition;
 
 
 typedef struct Automata {
   int num_states;
-  char *alphabet;
+  List *alphabet;
   Transition *transitions;
-  int **transitions_table;
+  List **transitions_table;
   int start;
-  int *finals;
+  List *finals;
 } Automata;
 
 
-Automata newAutomata(int num_states, char alphabet[], Transition transitions[], int start, int finals[]);
+Automata newAutomata(int num_states, List *alphabet, Transition transitions[], int start, List *finals);
 
-Transition newTransition(int from, int to, char symbol);
+Transition newTransition(int from, List *to, char symbol);
 
 int runAutomata(Automata a, char str[]);
 
 void printTransition(Transition t);
 
 void printAutomata(Automata a);
+
+#endif

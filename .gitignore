@@ -54,6 +54,7 @@ dkms.conf
 .ccls-cache/
 compile_commands.json
 build/*
+bin/*
 
 .idea/
 cmake-build-debug/

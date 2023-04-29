@@ -13,6 +13,7 @@ int main() {
             newTransition(1, newListFrom((int[]) {3}, 1), 'a'),
             newTransition(3, newListFrom((int[]) {3}, 1), 'a'),
             newTransition(3, newListFrom((int[]) {3}, 1), 'b'),
+            newTransition(0, newListFrom((int[]) {2}, 1), '\n'),
             newTransition(-1, newList(), ' '),
     };
     int start = 0;

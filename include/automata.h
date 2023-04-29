@@ -30,4 +30,10 @@ void printTransition(Transition t);
 
 void printAutomata(Automata a);
 
+Automata toAFD(Automata a);
+
+List closure(Automata a, List states);
+
+List move(Automata a, List states, char symbol);
+
 #endif

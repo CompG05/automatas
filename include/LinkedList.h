@@ -19,17 +19,21 @@ List* newList();
 
 List* newListFrom(int elements[], int n);
 
-int isEmpty(List ls);
+int listIsEmpty(List ls);
 
-void insert(List *ls, int position, int i);
+void listInsert(List *ls, int position, int i);
 
-void insertAll(List *ls, int position, int elements[], int n);
+void insertAllList(List *ls, int position, List in);
 
-int get(List ls, int position);
+void insertAllArray(List *ls, int position, int elements[], int n);
 
-int contains(List ls, int i);
+int listGet(List ls, int position);
 
-int delete(List *ls, int position);
+int listContains(List ls, int i);
+
+int listDelete(List *ls, int position);
+
+void removeRepeated(List *ls);
 
 int freeList(List *ls);
 

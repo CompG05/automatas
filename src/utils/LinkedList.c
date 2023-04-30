@@ -23,15 +23,15 @@ List* newList(){
 
 List *newListFrom(int elements[], int n) {
     List *l = newList();
-    insertAll(l, 0, elements, n);
+    insertAllArray(l, 0, elements, n);
     return l;
 }
 
-int isEmpty(List ls){
+int listIsEmpty(List ls){
     return ls.size == 0;
 }
 
-void insert(List *ls, int position, int i) {
+void listInsert(List *ls, int position, int i) {
     Node *n = newNode(i);
     Node *current = ls->head;
     for (int j = 0; j < position; j++) {
@@ -43,7 +43,17 @@ void insert(List *ls, int position, int i) {
     ls->size++;
 }
 
-void insertAll(List *ls, int position, int elements[], int n) {
+void insertAllList(List *ls, int position, List in) {
+  int arr[in.size];
+  Node *current = in.head;
+  for (int i = 0; i < in.size; i++) {
+    current = current->next;
+    arr[i] = current->data;
+  }
+  insertAllArray(ls, position, arr, in.size);
+}
+
+void insertAllArray(List *ls, int position, int elements[], int n) {
     Node *first = newNode(elements[0]);
     Node *last = first;
     Node *node;
@@ -65,7 +75,7 @@ void insertAll(List *ls, int position, int elements[], int n) {
     ls->size += n;
 }
 
-int get(List ls, int position) {
+int listGet(List ls, int position) {
     Node *current = ls.head->next;
     for (int j = 0; j < position; j++) {
         current = current->next;
@@ -73,7 +83,7 @@ int get(List ls, int position) {
     return current->data;
 }
 
-int contains(List ls, int i) {
+int listContains(List ls, int i) {
     Node *current = ls.head->next;
 
     while (current != NULL) {
@@ -84,8 +94,8 @@ int contains(List ls, int i) {
     return 0;
 }
 
-int delete(List *ls, int position) {
-   Node* current = ls->head;
+int listDelete(List *ls, int position) {
+    Node* current = ls->head;
     for (int j = 0; j < position; j++) {
          current = current->next;
     }
@@ -100,7 +110,7 @@ int delete(List *ls, int position) {
 
 int freeList(List *ls){
     for (int j = 0; j < ls->size -1; j++){
-        delete(ls, 0);
+        listDelete(ls, 0);
     }
     free(ls->head);
 }

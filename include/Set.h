@@ -17,7 +17,7 @@ int isEmpty(Set set);
 
 int contains(Set set, int elem);
 
-int add(Set *set, int elem);
+void add(Set *set, int elem);
 
 void addAll(Set *a, Set b);
 

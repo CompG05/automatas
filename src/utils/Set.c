@@ -28,7 +28,7 @@ int contains(Set s, int elem) {
   return listContains(*s.list, elem);
 }
 
-int add(Set *set, int elem) {
+void add(Set *set, int elem) {
   listInsert(set->list, 0, elem);
   removeRepeated(set->list);
 }

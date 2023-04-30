@@ -13,8 +13,8 @@ int codeOf(char c) {
   return c - 32;
 }
 
-Automata newAutomata(int num_states, List *alphabet, Transition transitions[],
-                     int start, List *finals) {
+Automata newAutomata(int num_states, Set *alphabet, Transition transitions[],
+                     int start, Set *finals) {
   // Pre: num_states > 0
   //      32 <= c <= 126 and c != 92 for all c in alphabet
   //      0 <= start < num_states
@@ -26,7 +26,7 @@ Automata newAutomata(int num_states, List *alphabet, Transition transitions[],
   a.start = start;
   a.finals = finals;
 
-  a.transitions_table = (List **)malloc(num_states * sizeof(int *));
+  a.transitions_table = (Set **)malloc(num_states * sizeof(int *));
   for (int i = 0; i < num_states; i++) {
     a.transitions_table[i] = (Set *) malloc((MAX_ALPHABET_SIZE) * sizeof(Set)); // Space for all symbols + lambda
     for (int j = 0; j < MAX_ALPHABET_SIZE; j++)
@@ -114,4 +114,61 @@ Set move(Automata a, Set states, char symbol) {
   }
 
   return *result;
+}
+
+
+
+
+
+void printTransition(Transition t) {
+  if (t.symbol == '\\')
+    printf("%d --> 'λ' --> [", t.from);
+  else
+    printf("%d --> '%c' --> [", t.from, t.symbol);
+  List arrivalList = asList(*t.to);
+  for (int i = 0; i < size(*t.to) - 1; i++) {
+    printf("%d, ", listGet( arrivalList, i));
+  }
+  printf("%d]", listGet(asList(*t.to), size(*t.to) - 1));
+}
+
+void printAutomata(Automata a) {
+  printf("Q = {");
+  for (int state = 0; state < a.num_states - 1; state++) {
+    printf("%d, ", state);
+  }
+  printf("%d}\n", a.num_states - 1);
+
+  List alphabetList = asList(*a.alphabet);
+  printf("S = {");
+  for (int i = 0; i < alphabetList.size - 1; i++) {
+    printf("'%c', ", listGet(alphabetList, i));
+  }
+  printf("'%c'}\n", listGet(alphabetList, alphabetList.size - 1));
+
+  printf("q0 = %d\n", a.start);
+
+
+  if (size(*a.finals) == 0) {
+    printf("F = {}\n");
+  } else {
+    List finalsList = asList(*a.finals);
+    printf("F = {");
+    for (int i = 0; i < finalsList.size - 1; i++) {
+      printf("%d, ", listGet(finalsList, i));
+    }
+    printf("%d}\n", listGet(finalsList, finalsList.size - 1));
+  }
+
+  printf("Delta = {\n");
+
+  int i = 0;
+  Transition t = a.transitions[0];
+  while (t.from >= 0) {
+    printf("\t");
+    printTransition(t);
+    printf(" ,\n");
+    t = a.transitions[++i];
+  }
+  printf("}\n");
 }

@@ -15,15 +15,15 @@ typedef struct Automata {
   int num_states;
   Set *alphabet;
   Transition *transitions;
-  List **transitions_table;
+  Set **transitions_table;
   int start;
-  List *finals;
+  Set *finals;
 } Automata;
 
 
-Automata newAutomata(int num_states, List *alphabet, Transition transitions[], int start, List *finals);
+Automata newAutomata(int num_states, Set *alphabet, Transition transitions[], int start, Set *finals);
 
-Transition newTransition(int from, List *to, char symbol);
+Transition newTransition(int from, Set *to, char symbol);
 
 int runAutomata(Automata a, char str[]);
 

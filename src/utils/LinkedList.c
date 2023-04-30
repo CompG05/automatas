@@ -108,6 +108,30 @@ int listDelete(List *ls, int position) {
     return data;
 }
 
+void removeRepeated(List *ls) {
+  Node *left = ls->head;
+  Node *right, *prev;
+  int removed;
+
+  for (int i = 0; i < ls->size; i++) {
+    left = left->next;
+    right = left;
+    prev = left;
+    removed = 0;
+    for (int j = i+1; j < ls->size; j++) {
+      right = right->next;
+
+      if (right->data == left->data) {
+        prev->next = right->next;
+        removed++;
+      } else {
+        prev = right;
+      }
+    }
+    ls->size -= removed;
+  }
+}
+
 int freeList(List *ls){
     for (int j = 0; j < ls->size -1; j++){
         listDelete(ls, 0);

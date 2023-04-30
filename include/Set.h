@@ -23,4 +23,4 @@ void addAll(Set *a, Set b);
 
 void printSet(Set set);
 
-#endif SET_H
+#endif

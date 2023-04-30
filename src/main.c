@@ -2,22 +2,23 @@
 
 #include "automata.h"
 #include "LinkedList.h"
+#include "Set.h"
 
 int main() {
     int alphabet_array[] = {'a', 'b'};
     int num_states = 4;
-    List *alphabet = newListFrom(alphabet_array, 2);
+    Set *alphabet = newSetFromArray(alphabet_array, 2);
     Transition transitions[] = {
-            newTransition(0, newListFrom((int[]) {1}, 1), 'a'),
-            newTransition(1, newListFrom((int[]) {2}, 1), 'b'),
-            newTransition(1, newListFrom((int[]) {3}, 1), 'a'),
-            newTransition(3, newListFrom((int[]) {3}, 1), 'a'),
-            newTransition(3, newListFrom((int[]) {3}, 1), 'b'),
-            newTransition(0, newListFrom((int[]) {2}, 1), '\n'),
-            newTransition(-1, newList(), ' '),
+            newTransition(0, newSetFromArray((int[]) {1}, 1), 'a'),
+            newTransition(1, newSetFromArray((int[]) {2}, 1), 'b'),
+            newTransition(1, newSetFromArray((int[]) {3}, 1), 'a'),
+            newTransition(3, newSetFromArray((int[]) {3}, 1), 'a'),
+            newTransition(3, newSetFromArray((int[]) {3}, 1), 'b'),
+            newTransition(0, newSetFromArray((int[]) {2}, 1), '\\'),
+            newTransition(-1, newSet(), ' '),
     };
     int start = 0;
-    List *finals = newListFrom((int []){2}, 1);
+    Set *finals = newSetFromArray((int []){2}, 1);
 
     Automata a = newAutomata(num_states, alphabet, transitions, start, finals);
     printAutomata(a);
@@ -31,5 +32,6 @@ int main() {
     printf("Accepts '%s': %d\n", s2, runAutomata(a, s2));
     printf("Accepts '%s': %d\n", s3, runAutomata(a, s3));
     printf("Accepts '%s': %d\n", s4, runAutomata(a, s4));
+
 
 }

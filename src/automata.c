@@ -3,21 +3,21 @@
 #include <string.h>
 
 #include "automata.h"
+#include "Set.h"
 
 const int MAX_ALPHABET_SIZE = 127 - 32;
+const char LAMBDA = '\\';
+const int LAMBDA_CODE = 92 - 32;
 
 int codeOf(char c) {
-  if (c == 10) // '\n' representing lambda
-    return MAX_ALPHABET_SIZE;
-  else
-    return c - 32;
+  return c - 32;
 }
 
 Automata newAutomata(int num_states, List *alphabet, Transition transitions[],
                      int start, List *finals) {
   // Pre: num_states > 0
-  //      32 <= c <= 126 or c = 10 for all c in alphabet
-  //      start <= num_states
+  //      32 <= c <= 126 and c != 92 for all c in alphabet
+  //      0 <= start < num_states
   //      0 <= f < num_states for all f in finals
   Automata a;
   a.num_states = num_states;
@@ -28,9 +28,9 @@ Automata newAutomata(int num_states, List *alphabet, Transition transitions[],
 
   a.transitions_table = (List **)malloc(num_states * sizeof(int *));
   for (int i = 0; i < num_states; i++) {
-    a.transitions_table[i] = (List *)malloc((MAX_ALPHABET_SIZE + 1) * sizeof(List)); // Space for all symbols + lambda
-    for (int j = 0; j < 126 - 32; j++)
-      a.transitions_table[i][j] = *newList();
+    a.transitions_table[i] = (Set *) malloc((MAX_ALPHABET_SIZE) * sizeof(Set)); // Space for all symbols + lambda
+    for (int j = 0; j < MAX_ALPHABET_SIZE; j++)
+      a.transitions_table[i][j] = *newSet();
   }
 
   Transition transition = transitions[0];
@@ -44,7 +44,7 @@ Automata newAutomata(int num_states, List *alphabet, Transition transitions[],
   return a;
 }
 
-Transition newTransition(int from, List *to, char symbol) {
+Transition newTransition(int from, Set *to, char symbol) {
   Transition t;
   t.from = from;
   t.to = to;
@@ -55,7 +55,7 @@ Transition newTransition(int from, List *to, char symbol) {
 
 int runAutomata(Automata a, char str[]) {
   int state = a.start;
-  List outgoing;
+  Set outgoing;
   for (int i = 0; i < strlen(str); i++) {
     char symbol = str[i];
     outgoing = a.transitions_table[state][codeOf(symbol)];
@@ -63,72 +63,55 @@ int runAutomata(Automata a, char str[]) {
     if (isEmpty(outgoing))
       return 0;
 
-    state = get(outgoing, 0);
+    state = listGet(asList(outgoing), 0);
   }
 
   return contains(*a.finals, state);
 }
 
-void printTransition(Transition t) {
-  if (t.symbol == '\n')
-    printf("%d --> '' --> [", t.from);
-  else
-    printf("%d --> '%c' --> [", t.from, t.symbol);
-  for (int i = 0; i < t.to->size - 1; i++) {
-    printf("%d, ", get(*t.to, i));
-  }
-  printf("%d]", get(*t.to, t.to->size - 1));
-}
-
-void printAutomata(Automata a) {
-  printf("Q = {");
-  for (int state = 0; state < a.num_states - 1; state++) {
-    printf("%d, ", state);
-  }
-  printf("%d}\n", a.num_states - 1);
-
-  printf("S = {");
-  for (int i = 0; i < a.alphabet->size - 1; i++) {
-    printf("'%c', ", get(*a.alphabet, i));
-  }
-  printf("'%c'}\n", get(*a.alphabet, a.alphabet->size - 1));
-
-  printf("q0 = %d\n", a.start);
-
-  if (a.finals->size == 0) {
-    printf("F = {}\n");
-  } else {
-    printf("F = {");
-    for (int i = 0; i < a.finals->size - 1; i++) {
-      printf("%d, ", get(*a.finals, i));
-    }
-    printf("%d}\n", get(*a.finals, a.finals->size - 1));
-  }
-
-  printf("Delta = {\n");
-
-  int i = 0;
-  Transition t = a.transitions[0];
-  while (t.from >= 0) {
-    printf("\t");
-    printTransition(t);
-    printf(" ,\n");
-    t = a.transitions[++i];
-  }
-  printf("}\n");
-}
 
 Automata toAFD(Automata a) {
   // Not implemented
-  return newAutomata(0, newList(), NULL, 0, newList());
+  return newAutomata(0, newSet(), NULL, 0, newSet());
 }
 
-List closure(Automata a, List states) {
-  // Not implemented
-  return *newList();
+Set lClosure(Automata a, Set states) {
+  Set *result = newSet();
+  List resultList = asList(*result);
+  Set *addedStates;
+  int state;
+  Set lAdjacents;
+  int changed = 1;
+
+  addAll(result, states);
+
+  while (changed) {
+    changed = 0;
+    addedStates = newSet();
+    for (int i = 0; i < size(*result); i++) {
+      state = listGet(resultList, i);
+      lAdjacents = a.transitions_table[state][LAMBDA_CODE];
+
+      addAll(addedStates, lAdjacents);
+    }
+
+    int old_size = size(*result);
+    addAll(result, *addedStates);
+    if(old_size != size(*result)) changed = 1;
+  }
+  return *result;
 }
 
-List move(Automata a, List states, char symbol) {
-  // Not implemented
-  return *newList();
+Set move(Automata a, Set states, char symbol) {
+  Set *result = newSet();
+  List statesList = asList(states);
+  int state;
+
+  for (int i= 0; i < statesList.size; i++){
+    state = listGet(statesList, i);
+    Set moved = a.transitions_table[state][codeOf(symbol)];
+    addAll(result, moved);
+  }
+
+  return *result;
 }

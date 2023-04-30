@@ -2,17 +2,18 @@
 #define AUTOMATA_H
 
 #include "LinkedList.h"
+#include "Set.h"
 
 typedef struct Transition {
   int from;
-  List *to;
+  Set *to;
   char symbol;
 } Transition;
 
 
 typedef struct Automata {
   int num_states;
-  List *alphabet;
+  Set *alphabet;
   Transition *transitions;
   List **transitions_table;
   int start;
@@ -32,8 +33,10 @@ void printAutomata(Automata a);
 
 Automata toAFD(Automata a);
 
-List closure(Automata a, List states);
+Set lClosure(Automata a, Set states);
 
-List move(Automata a, List states, char symbol);
+Set move(Automata a, Set states, char symbol);
+
+List asList(Set set);
 
 #endif

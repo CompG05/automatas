@@ -54,9 +54,11 @@ void insertAllList(List *ls, int position, List in) {
 }
 
 void insertAllArray(List *ls, int position, int elements[], int n) {
+    if (n == 0) return;
     Node *first = newNode(elements[0]);
     Node *last = first;
     Node *node;
+
     for (int i = 1; i < n; i++) {
         node = newNode(elements[i]);
         last->next = node;

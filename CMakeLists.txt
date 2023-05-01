@@ -11,7 +11,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIB_DIR})
 
 set(CMAKE_BINARY_DIR ${Automata_SOURCE_DIR}/build)
 
-add_library(automata ${SRC_DIR}/automata.c)
+add_library(automata ${SRC_DIR}/automata.c ${SRC_DIR}/readAutomata.c)
 add_library(utils ${SRC_DIR}/utils/LinkedList.c ${SRC_DIR}/utils/Set.c)
 add_executable(main ${SRC_DIR}/main.c)
 include_directories(${INC_DIR})

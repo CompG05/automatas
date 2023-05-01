@@ -7,8 +7,8 @@
 #include "Set.h"
 
 const int MAX_ALPHABET_SIZE = 127 - 32;
-const char LAMBDA = '\\';
-const int LAMBDA_CODE = 92 - 32;
+const char LAMBDA = '_';
+const int LAMBDA_CODE = '_' - 32;
 
 int codeOf(char c) {
   return c - 32;
@@ -17,7 +17,7 @@ int codeOf(char c) {
 Automata newAutomata(int num_states, Set *alphabet, Transition transitions[],
                      int start, Set *finals) {
   // Pre: num_states > 0
-  //      32 <= c <= 126 and c != 92 for all c in alphabet
+  //      32 <= c <= 126 and c != LAMBDA for all c in alphabet
   //      0 <= start < num_states
   //      0 <= f < num_states for all f in finals
   Automata a;
@@ -83,7 +83,7 @@ Automata toAFD(Automata a) {
 
   Set* T = (Set*) malloc((int) pow(2,a.num_states) * sizeof(Set));
   int size_t = 0;
-  Transition* transitions =  (Transition*) malloc((int) pow(2,a.num_states) * size(*a.alphabet) * sizeof(Transition));
+  Transition* transitions = (Transition*) malloc((int) pow(2,a.num_states) * size(*a.alphabet) * sizeof(Transition));
   int size_transitions = 0;
 
 
@@ -174,7 +174,7 @@ Set move(Automata a, Set states, char symbol) {
 
 
 void printTransition(Transition t) {
-  if (t.symbol == '\\')
+  if (t.symbol == '_')
     printf("%d --> 'λ' --> [", t.from);
   else
     printf("%d --> '%c' --> [", t.from, t.symbol);

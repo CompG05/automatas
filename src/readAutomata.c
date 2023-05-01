@@ -75,7 +75,7 @@ void updateAlphabet(char *s, Set *alphabet) {
 
   for (int i = 0; i < strlen(label); i++) {
     char c = label[i];
-    if (c == ',') continue;
+    if (c == ',' || c == '_') continue;
 
     add(alphabet, c);
   }

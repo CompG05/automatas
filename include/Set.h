@@ -21,6 +21,12 @@ void add(Set *set, int elem);
 
 void addAll(Set *a, Set b);
 
+int equals(Set a, Set b);
+
+Set intersection(Set a, Set b);
+
 void printSet(Set set);
+
+List asList(Set set);
 
 #endif

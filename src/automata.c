@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "automata.h"
 #include "Set.h"
@@ -71,8 +72,62 @@ int runAutomata(Automata a, char str[]) {
 
 
 Automata toAFD(Automata a) {
-  // Not implemented
-  return newAutomata(0, newSet(), NULL, 0, newSet());
+  //declare local variables
+
+  List alphabet = asList(*a.alphabet);
+  int already_counted = 0;
+  int M_position = 0;
+
+
+  //initialize Set of sets of states (T) and  Set of transitions (transitions)
+
+  Set* T = (Set*) malloc((int) pow(2,a.num_states) * sizeof(Set));
+  int size_t = 0;
+  Transition* transitions =  (Transition*) malloc((int) pow(2,a.num_states) * size(*a.alphabet) * sizeof(Transition));
+  int size_transitions = 0;
+
+
+  //calculate initial-state's lClosure and insert it in T
+
+  Set *start_set = newSetFromArray((int[]) {a.start}, 1);
+  T[0] = lClosure(a,*start_set);
+  size_t++;
+
+  for(int i=0; i<size_t; i++){                                    //for each S in T
+    for (int j=0; j<size(*a.alphabet); j++){                  //for each alphabet symbol
+      char symbol = (char) listGet(alphabet, j);
+      Set M = lClosure(a, move(a, T[i], symbol));    //create M=lClosure(move(S,symbol))
+
+      already_counted = 0;                                        //check whether M is in T or not
+      for(int z=0; z<size_t; z++){
+        if (equals(M,T[z])){
+          already_counted = 1;
+          M_position = z;
+        }
+      }
+      if(!already_counted) {                                      //if M wasn't in T already
+        M_position = size_t;
+        T[M_position] = M;                                        //insert M in T
+        size_t++;
+      }
+
+      Set *to = newSetFromArray((int[]) {M_position}, 1);
+      transitions[size_transitions++] = newTransition(i, to, symbol);            //define delta transition (i --'symbol'-> {M_position})
+    }
+  }
+
+  transitions[size_transitions++] = newTransition(-1, newSet(), ' ');  //insert transition's final mark
+
+  Set *finals = newSet();
+  for (int i=0; i<size_t; i++){                                           //for each S in T
+    if(!isEmpty(intersection(*a.finals, T[i]))){                //if its intersection with a.finals is not empty
+      add(finals, i);                                           //insert it in new finals set
+    }
+  }
+
+
+  // return deterministic automata
+  return newAutomata(size_t, a.alphabet, transitions, 0, finals);
 }
 
 Set lClosure(Automata a, Set states) {
@@ -115,8 +170,6 @@ Set move(Automata a, Set states, char symbol) {
 
   return *result;
 }
-
-
 
 
 

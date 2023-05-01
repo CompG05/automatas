@@ -40,6 +40,34 @@ void addAll(Set *a, Set b) {
   removeRepeated(a->list);
 }
 
+int equals(Set a, Set b){
+  List aList = asList(a);
+  List bList = asList(b);
+
+  for(int i = 0; i < aList.size; i++){
+    if (!listContains(bList, listGet(aList, i))) return 0;
+  }
+  for(int i = 0; i < bList.size; i++){
+    if (!listContains(aList, listGet(bList, i))) return 0;
+  }
+
+  return 1;
+}
+
+Set intersection(Set a, Set b){
+  Set *result = newSet();
+  List aList = asList(a);
+  List bList = asList(b);
+
+  for(int i = 0; i < aList.size; i++){
+    int state = listGet(aList, i);
+    if(listContains(bList, state))  add(result, state);
+  }
+
+  return *result;
+
+}
+
 void printSet(Set set) {
   printList(*set.list);
 }

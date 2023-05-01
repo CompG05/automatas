@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "automata.h"
 
 void writeAutomata(Automata a, char filename[]){
+  List destStates;
   FILE *f = fopen(filename, "w");
   if (f == NULL)
     exit(EXIT_FAILURE);
@@ -12,48 +14,38 @@ void writeAutomata(Automata a, char filename[]){
   fputs("inic[shape=point];\n", f);
   fprintf(f ,"inic->q%d;\n\n", a.start);
 
-//  for (int state = 0; state < a.num_states; state++) {
-//    for (int otherState = state+1; otherState < a.num_states; otherState++) {
-//      Transition t = a.transitions[0];
-//      int k = 0;
-//
-//      List *symbols = newList();
-//      while (t.from >= 0) {
-//
-//      }
-//    }
-//  }
+  int mark[a.num_states];
+  for (int i = 0; i < a.num_states; i++)
+    mark[i] = 0;
 
-  Transition t = a.transitions[0];
-  int state;
-  int state2;
-  int k = 0;
-  int k2 = 0;
-  List destStates;
-  List destStates2;
+  for (int state = 0; state < a.num_states; state++) {
+    for (int otherState = 0; otherState < a.num_states; otherState++) {
+      if (state == otherState) {
+        // Ensure loops are checked only once
+        if (mark[state]) continue;
+        else mark[state] = 1;
+      }
+      Transition t = a.transitions[0];
+      int k = 0;
 
-  while (t.from >= 0) {
-    List *symbols = newList();
-    listInsert(symbols, t.symbol);
+      List *symbols = newList();
+      while (t.from >= 0) {
+        destStates = asList(*t.to);
+        if(t.from == state && listContains(destStates, otherState))
+          listInsert(symbols, symbols->size, t.symbol);
 
-    // For state in destStates
-    destStates = asList(*t.to);
-    for (int i = 0; i < destStates.size; i++) {
-      state = listGet(destStates, i);
-
-      //For every following transition
-      Transition t2 = a.transitions[k+1];
-      while(t2.from>=0){
-        if(t.from == t2.from){
-          destStates2 = asList(*t2.to);
-          if (listContains(destStates2, state)) listInsert(symbols, t2.symbol);
-        }
+        t = a.transitions[++k];
       }
 
-      fprintf(f, "q%d->q%d [label=\"%c\"];\n", t.from, state, t.symbol);
-    }
+      if(listIsEmpty(*symbols))
+        continue;
 
-    t = a.transitions[++k];
+      fprintf(f, "q%d->q%d [label=\"", state, otherState);
+      for(int i=0; i<symbols->size-1; i++){
+        fprintf(f, "%c,", listGet(*symbols, i));
+      }
+      fprintf(f, "%c\"];\n", listGet(*symbols, symbols->size-1));
+    }
   }
 
   fputs("\n", f);

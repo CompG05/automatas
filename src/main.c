@@ -71,7 +71,7 @@ int main() {
   Automata a2 = newAutomata(num_states2, alphabet2, transitions2, start2, finals2);
   printAutomata(a2);
   printAutomata(toAFD(a2));
-  */
+*/
 
   Automata a = readAutomata("/home/pablo/UNI/automatas/automatas/automata.dot");
   printAutomata(a);
@@ -91,7 +91,7 @@ int main() {
   printf("AFD accepts '%s' : %d\n", s3, runAutomata(aAFD, s3));
   printf("AFD accepts '%s' : %d\n", s4, runAutomata(aAFD, s4));
 
-  writeAutomata(a, "aNFA");
-  writeAutomata(aAFD, "aDFA");
+  writeAutomata(a, "../aNFA");
+  writeAutomata(aAFD, "../aDFA");
 
 }

@@ -1,5 +1,11 @@
-mkdir build bin lib
-cd build
-cmake ..
-cd ..
-cmake --build .
+to build
+  mkdir build bin lib
+  cd build
+  cmake ..
+  cd ..
+  cmake --build build/
+
+to clean
+  cd build
+  make clean
+  cd ..

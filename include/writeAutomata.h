@@ -1,5 +1,5 @@
 #ifndef WRITE_AUTOMATA_H
-#define WWRITE_AUTOMATA_H
+#define WRITE_AUTOMATA_H
 
 #include "automata.h"
 

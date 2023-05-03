@@ -2,7 +2,7 @@
 
 This project requires cmake for building.
 
-For building instructions, check out the [building instructions](building_instructions.txt).
+For building instructions, check out the [build instructions](build_instructions.txt).
 
 
 There are 2 main executables, and 4 testing executables built into the bin/ directory:

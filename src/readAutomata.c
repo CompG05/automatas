@@ -18,7 +18,7 @@ void parseTransitions(char *s, Transition result[], int *n_transitions) {
   int from;
   int to;
   char symbols[200];
-  int added = 0;
+  int added;
   Transition t;
 
   sscanf(s, "q%d->q%d [label=\"%199[^\"]\"]", &from, &to, symbols);
@@ -132,6 +132,9 @@ Automata readAutomata(char filename[]) {
     }
   }
   free(line);
+  regfree(&initial_regex);
+  regfree(&transition_regex);
+  regfree(&final_regex);
   fclose(fp);
 
   transitions[n_transitions] = newTransition(-1, newSet(), ' ');

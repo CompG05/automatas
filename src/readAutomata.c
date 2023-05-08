@@ -122,6 +122,7 @@ Automata readAutomata(char filename[]) {
       updateAlphabet(line, alphabet);
     }
   }
+  free(line);
   Transition *transitions = (Transition *) malloc((numStates * size(*alphabet) + 1) * sizeof(Transition));
 
   rewind(fp);
@@ -130,8 +131,11 @@ Automata readAutomata(char filename[]) {
       parseTransitions(line, transitions, &n_transitions);
     }
   }
+  free(line);
+  fclose(fp);
 
   transitions[n_transitions] = newTransition(-1, newSet(), ' ');
 
-  return newAutomata(numStates, alphabet, transitions, start, finals);
+  Automata automata = newAutomata(numStates, alphabet, transitions, start, finals);
+  return automata;
 }

@@ -28,6 +28,7 @@ int main(int argc, char** argv) {
   printAutomata(a);
 
   writeAutomata(a,"test/files/test_write_autom.dot");
+  freeAutomata(&a);
   printf("\nfinished!\n");
 
 }

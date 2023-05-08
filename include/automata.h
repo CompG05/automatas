@@ -39,4 +39,6 @@ Set move(Automata a, Set states, char symbol);
 
 List asList(Set set);
 
+void freeAutomata(Automata *a);
+
 #endif

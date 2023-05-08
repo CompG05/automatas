@@ -75,3 +75,8 @@ void printSet(Set set) {
 List asList(Set set) {
   return *set.list;
 }
+
+void freeSet(Set *set) {
+  freeList(set->list);
+  free(set);
+}

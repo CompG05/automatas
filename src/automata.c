@@ -225,3 +225,13 @@ void printAutomata(Automata a) {
   }
   printf("}\n");
 }
+
+
+void freeAutomata(Automata *a) {
+  free(a->alphabet);
+  for (int i = 0; i < a->num_states; i++) {
+    free(a->transitions_table[i]);
+  }
+  free(a->transitions_table);
+  free(a->finals);
+}

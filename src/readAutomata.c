@@ -17,11 +17,11 @@ int parseInitial(char *s) {
 void parseTransitions(char *s, Transition result[], int *n_transitions) {
   int from;
   int to;
-  char symbols[200];
+  char symbols[95];
   int added;
   Transition t;
 
-  sscanf(s, "q%d->q%d [label=\"%199[^\"]\"]", &from, &to, symbols);
+  sscanf(s, "q%d->q%d [label=\"%[^\"]", &from, &to, symbols);
 
   // For symbol in symbols
   for (int i = 0; i < strlen(symbols); i++) {
@@ -50,7 +50,7 @@ void parseTransitions(char *s, Transition result[], int *n_transitions) {
 int parseFinal(char *s) {
   int final;
 
-  sscanf(s, "q%d[shape=doublecircle]", &final);
+  sscanf(s, "q%d%*s", &final);
 
   return final;
 }
@@ -59,7 +59,7 @@ void updateNumStates(char s[], int *numStates) {
   // Pre: s matches a transition line
   int a, b;
 
-  sscanf(s, "q%d->q%d [label=\"%s\"];", &a, &b, (char *) NULL);
+  sscanf(s, "q%d->q%d%*s", &a, &b);
 
   if (a >= *numStates) *numStates = a + 1;
   if (b >= *numStates) *numStates = b + 1;
@@ -67,11 +67,9 @@ void updateNumStates(char s[], int *numStates) {
 
 void updateAlphabet(char *s, Set *alphabet) {
   // Pre: s matches a transition line
-  int a;
-  int b;
-  char label[200];
+  char label[95];
 
-  sscanf(s, "q%d->q%d [label=\"%199[^\"]\"];", &a,&b, label);
+  sscanf(s, "q%*d->q%*d [label=\"%[^\"]", label);
 
   for (int i = 0; i < strlen(label); i++) {
     char c = label[i];

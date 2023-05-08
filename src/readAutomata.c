@@ -137,5 +137,6 @@ Automata readAutomata(char filename[]) {
   transitions[n_transitions] = newTransition(-1, newSet(), ' ');
 
   Automata automata = newAutomata(numStates, alphabet, transitions, start, finals);
+  free(transitions);
   return automata;
 }

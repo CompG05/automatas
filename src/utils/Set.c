@@ -6,11 +6,12 @@
 Set* newSet() {
   Set *s = (Set*) malloc(sizeof(Set));
   s->list = newList();
+  s->selfPtr = s;
   return s;
 }
 
 Set* newSetFromArray(int elements[], int n) {
-  Set *s = (Set*) malloc(sizeof(Set));
+  Set *s = newSet();
   s->list = newListFrom(elements, n);
   removeRepeated(s->list);
   return s;
@@ -76,7 +77,16 @@ List asList(Set set) {
   return *set.list;
 }
 
+Set *setCopy(Set* set) {
+    List l = asList(*set);
+    Set *s = newSet();
+    for (int i = size(*set)-1; i >= 0 ; i--) {
+        add(s, listGet(l, i));
+    }
+    return s;
+}
+
 void freeSet(Set *set) {
   freeList(set->list);
-  free(set);
+  free(set->selfPtr);
 }

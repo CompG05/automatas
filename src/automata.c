@@ -1,20 +1,18 @@
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 
-#include "automata.h"
 #include "Set.h"
+#include "automata.h"
 
 const int MAX_ALPHABET_SIZE = 127 - 32;
 const char LAMBDA = '_';
 const int LAMBDA_CODE = '_' - 32;
 
-int codeOf(char c) {
-  return c - 32;
-}
+int codeOf(char c) { return c - 32; }
 
-Automata newAutomata(int num_states, Set *alphabet, Transition transitions[],
+Automata newAutomata(int num_states, Set *alphabet, Transition *transitions,
                      int start, Set *finals) {
   // Pre: num_states > 0
   //      32 <= c <= 126 and c != LAMBDA for all c in alphabet
@@ -23,13 +21,26 @@ Automata newAutomata(int num_states, Set *alphabet, Transition transitions[],
   Automata a;
   a.num_states = num_states;
   a.alphabet = alphabet;
-  a.transitions = transitions;
+
+  int transition_count = 0;
+  Transition t = transitions[0];
+  while (t.from >= 0) {
+    transition_count++;
+    t = transitions[transition_count];
+  }
+
+  a.transitions =
+      (Transition *)malloc((transition_count+1) * sizeof(Transition));
+  for (int i = 0; i < transition_count + 1; i++)
+    a.transitions[i] = transitions[i];
+
   a.start = start;
   a.finals = finals;
 
-  a.transitions_table = (Set **)malloc(num_states * sizeof(int *));
+  a.transitions_table = (Set **)malloc(num_states * sizeof(Set *));
   for (int i = 0; i < num_states; i++) {
-    a.transitions_table[i] = (Set *) malloc((MAX_ALPHABET_SIZE) * sizeof(Set)); // Space for all symbols + lambda
+    a.transitions_table[i] = (Set *)malloc(
+        MAX_ALPHABET_SIZE * sizeof(Set)); // Space for all symbols + lambda
     for (int j = 0; j < MAX_ALPHABET_SIZE; j++)
       a.transitions_table[i][j] = *newSet();
   }
@@ -38,7 +49,7 @@ Automata newAutomata(int num_states, Set *alphabet, Transition transitions[],
   int i = 0;
   while (transition.from >= 0) {
     a.transitions_table[transition.from][codeOf(transition.symbol)] =
-        *transition.to;
+        *setCopy(transition.to);
     transition = transitions[++i];
   }
 
@@ -70,64 +81,78 @@ int runAutomata(Automata a, char str[]) {
   return contains(*a.finals, state);
 }
 
-
 Automata toAFD(Automata a) {
-  //declare local variables
+  // declare local variables
 
   List alphabet = asList(*a.alphabet);
   int already_counted = 0;
   int M_position = 0;
 
+  // initialize Set of sets of states (T) and  Set of transitions (transitions)
 
-  //initialize Set of sets of states (T) and  Set of transitions (transitions)
-
-  Set* T = (Set*) malloc((int) pow(2,a.num_states) * sizeof(Set));
+  Set *T = (Set *)malloc((int)pow(2, a.num_states) * sizeof(Set));
   int size_t = 0;
-  Transition* transitions = (Transition*) malloc((int) pow(2,a.num_states) * size(*a.alphabet) * sizeof(Transition));
+  Transition *transitions = (Transition *)malloc(
+      (int)pow(2, a.num_states) * size(*a.alphabet) * sizeof(Transition));
   int size_transitions = 0;
 
+  // calculate initial-state's lClosure and insert it in T
 
-  //calculate initial-state's lClosure and insert it in T
-
-  Set *start_set = newSetFromArray((int[]) {a.start}, 1);
-  T[0] = lClosure(a,*start_set);
+  Set *start_set = newSetFromArray((int[]){a.start}, 1);
+  T[0] = lClosure(a, *start_set);
   size_t++;
 
-  for(int i=0; i<size_t; i++){                                    //for each S in T
-    for (int j=0; j<size(*a.alphabet); j++){                  //for each alphabet symbol
-      char symbol = (char) listGet(alphabet, j);
-      Set M = lClosure(a, move(a, T[i], symbol));    //create M=lClosure(move(S,symbol))
+  Set moveSet;
+  Set M;
+  for (int i = 0; i < size_t; i++) {              // for each S in T
+    for (int j = 0; j < size(*a.alphabet); j++) { // for each alphabet symbol
+      char symbol = (char)listGet(alphabet, j);
+      moveSet = move(a, T[i], symbol); // create move(S,symbol)
+      M = lClosure(a, moveSet);        // create M=lClosure(move(S,symbol))
 
-      already_counted = 0;                                        //check whether M is in T or not
-      for(int z=0; z<size_t; z++){
-        if (equals(M,T[z])){
+      already_counted = 0; // check whether M is in T or not
+      for (int z = 0; z < size_t; z++) {
+        if (equals(M, T[z])) {
           already_counted = 1;
           M_position = z;
         }
       }
-      if(!already_counted) {                                      //if M wasn't in T already
+      if (!already_counted) { // if M wasn't in T already
         M_position = size_t;
-        T[M_position] = M;                                        //insert M in T
+        T[M_position] = *setCopy(&M); // insert M in T
         size_t++;
       }
 
-      Set *to = newSetFromArray((int[]) {M_position}, 1);
-      transitions[size_transitions++] = newTransition(i, to, symbol);            //define delta transition (i --'symbol'-> {M_position})
+      Set *to = newSetFromArray((int[]){M_position}, 1);
+      transitions[size_transitions++] = newTransition(
+          i, to,
+          symbol); // define delta transition (i --'symbol'-> {M_position})
+
+      freeSet(&moveSet);
+      freeSet(&M);
     }
   }
 
-  transitions[size_transitions++] = newTransition(-1, newSet(), ' ');  //insert transition's final mark
+  transitions[size_transitions++] =
+      newTransition(-1, newSet(), ' '); // insert transition's final mark
 
   Set *finals = newSet();
-  for (int i=0; i<size_t; i++){                                           //for each S in T
-    if(!isEmpty(intersection(*a.finals, T[i]))){                //if its intersection with a.finals is not empty
-      add(finals, i);                                           //insert it in new finals set
+  for (int i = 0; i < size_t; i++) { // for each S in T
+    if (!isEmpty(intersection(
+            *a.finals,
+            T[i]))) { // if its intersection with a.finals is not empty
+      add(finals, i); // insert it in new finals set
     }
+    freeSet(&T[i]);
   }
 
+  freeSet(start_set);
+  free(T);
 
   // return deterministic automata
-  return newAutomata(size_t, a.alphabet, transitions, 0, finals);
+  Automata newAutom = newAutomata(size_t, setCopy(a.alphabet), transitions, 0, finals);
+  free(transitions);
+  return newAutom;
 }
 
 Set lClosure(Automata a, Set states) {
@@ -152,7 +177,8 @@ Set lClosure(Automata a, Set states) {
 
     int old_size = size(*result);
     addAll(result, *addedStates);
-    if(old_size != size(*result)) changed = 1;
+    if (old_size != size(*result))
+      changed = 1;
   }
   return *result;
 }
@@ -162,7 +188,7 @@ Set move(Automata a, Set states, char symbol) {
   List statesList = asList(states);
   int state;
 
-  for (int i= 0; i < statesList.size; i++){
+  for (int i = 0; i < statesList.size; i++) {
     state = listGet(statesList, i);
     Set moved = a.transitions_table[state][codeOf(symbol)];
     addAll(result, moved);
@@ -171,8 +197,6 @@ Set move(Automata a, Set states, char symbol) {
   return *result;
 }
 
-
-
 void printTransition(Transition t) {
   if (t.symbol == '_')
     printf("%d --> 'λ' --> [", t.from);
@@ -180,7 +204,7 @@ void printTransition(Transition t) {
     printf("%d --> '%c' --> [", t.from, t.symbol);
   List arrivalList = asList(*t.to);
   for (int i = 0; i < size(*t.to) - 1; i++) {
-    printf("%d, ", listGet( arrivalList, i));
+    printf("%d, ", listGet(arrivalList, i));
   }
   printf("%d]", listGet(asList(*t.to), size(*t.to) - 1));
 }
@@ -200,7 +224,6 @@ void printAutomata(Automata a) {
   printf("'%c'}\n", listGet(alphabetList, alphabetList.size - 1));
 
   printf("q0 = %d\n", a.start);
-
 
   if (size(*a.finals) == 0) {
     printf("F = {}\n");
@@ -226,12 +249,22 @@ void printAutomata(Automata a) {
   printf("}\n");
 }
 
-
 void freeAutomata(Automata *a) {
-  free(a->alphabet);
+  freeSet(a->alphabet);
+  Transition t = a->transitions[0];
+  int k = 0;
+  while (t.from >= 0) {
+    freeSet(t.to);
+    t = a->transitions[++k];
+  }
+  freeSet(t.to);
+  free(a->transitions);
   for (int i = 0; i < a->num_states; i++) {
+    for (int j = 0; j < MAX_ALPHABET_SIZE; j++) {
+      freeSet(&a->transitions_table[i][j]);
+    }
     free(a->transitions_table[i]);
   }
   free(a->transitions_table);
-  free(a->finals);
+  freeSet(a->finals);
 }

@@ -34,6 +34,7 @@ int main() {
 
   printf("\nPress any key to continue\n");
   getc(stdin);
+  fflush(stdout);
   printf("\n\n");
 
   printf("Testing automata 2\n\n");
@@ -62,4 +63,11 @@ int main() {
            runAutomata(aDFA, invalidStrings2[i]) ? "accepted" : "rejected");
   }
   freeAutomata(&aDFA);
+
+  printf("\nPress any key to continue\n");
+  getc(stdin);
+  fflush(stdout);
+  printf("\n\n");
+
+
 }

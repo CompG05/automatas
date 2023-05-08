@@ -18,6 +18,8 @@ void writeAutomata(Automata a, char filename[]){
   for (int i = 0; i < a.num_states; i++)
     mark[i] = 0;
 
+  List *symbols;
+  Transition t;
   for (int state = 0; state < a.num_states; state++) {
     for (int otherState = 0; otherState < a.num_states; otherState++) {
       if (state == otherState) {
@@ -25,10 +27,10 @@ void writeAutomata(Automata a, char filename[]){
         if (mark[state]) continue;
         else mark[state] = 1;
       }
-      Transition t = a.transitions[0];
+      t = a.transitions[0];
       int k = 0;
 
-      List *symbols = newList();
+      symbols = newList();
       while (t.from >= 0) {
         destStates = asList(*t.to);
         if(t.from == state && listContains(destStates, otherState))
@@ -46,6 +48,7 @@ void writeAutomata(Automata a, char filename[]){
       }
       fprintf(f, "%c\"];\n", listGet(*symbols, symbols->size-1));
     }
+    freeList(symbols);
   }
 
   fputs("\n", f);
@@ -58,5 +61,5 @@ void writeAutomata(Automata a, char filename[]){
   }
 
   fputs("}", f);
-
+  fclose(f);
 }

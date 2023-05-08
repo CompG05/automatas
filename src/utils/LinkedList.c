@@ -97,6 +97,8 @@ int listContains(List ls, int i) {
 }
 
 int listDelete(List *ls, int position) {
+    if (position >= ls->size) return -1;
+
     Node* current = ls->head;
     for (int j = 0; j < position; j++) {
          current = current->next;
@@ -135,10 +137,11 @@ void removeRepeated(List *ls) {
 }
 
 int freeList(List *ls){
-    for (int j = 0; j < ls->size -1; j++){
+    for (int j = 0; j < ls->size; j++){
         listDelete(ls, 0);
     }
     free(ls->head);
+    free(ls);
 }
 
 void printList(List ls) {

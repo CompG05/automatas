@@ -5,6 +5,7 @@
 
 typedef struct Set {
   List *list;
+  struct Set *selfPtr;
 } Set;
 
 Set* newSet();
@@ -28,5 +29,9 @@ Set intersection(Set a, Set b);
 void printSet(Set set);
 
 List asList(Set set);
+
+Set* setCopy(Set* set);
+
+void freeSet(Set *set);
 
 #endif

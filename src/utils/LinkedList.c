@@ -128,7 +128,7 @@ void removeRepeated(List *ls) {
       if (right->data == left->data) {
         prev->next = right->next;
         free(right);
-        right = prev->next;
+        right = prev;
         removed++;
       } else {
         prev = right;

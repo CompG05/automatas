@@ -127,6 +127,8 @@ void removeRepeated(List *ls) {
 
       if (right->data == left->data) {
         prev->next = right->next;
+        free(right);
+        right = prev->next;
         removed++;
       } else {
         prev = right;
@@ -137,10 +139,12 @@ void removeRepeated(List *ls) {
 }
 
 int freeList(List *ls){
-    for (int j = 0; j < ls->size; j++){
-        listDelete(ls, 0);
+    Node *current = ls->head;
+    while (current != NULL) {
+        Node *next = current->next;
+        free(current);
+        current = next;
     }
-    free(ls->head);
     free(ls);
 }
 

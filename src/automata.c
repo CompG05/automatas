@@ -137,13 +137,14 @@ Automata toAFD(Automata a) {
       newTransition(-1, newSet(), ' '); // insert transition's final mark
 
   Set *finals = newSet();
+  Set intersectionSet;
   for (int i = 0; i < size_t; i++) { // for each S in T
-    if (!isEmpty(intersection(
-            *a.finals,
-            T[i]))) { // if its intersection with a.finals is not empty
+    intersectionSet = intersection(*a.finals, T[i]);
+    if (!isEmpty(intersectionSet)) { // if its intersection with a.finals is not empty
       add(finals, i); // insert it in new finals set
     }
     freeSet(&T[i]);
+    freeSet(&intersectionSet);
   }
 
   freeSet(start_set);
@@ -179,6 +180,7 @@ Set lClosure(Automata a, Set states) {
     addAll(result, *addedStates);
     if (old_size != size(*result))
       changed = 1;
+    freeSet(addedStates);
   }
   return *result;
 }

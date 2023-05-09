@@ -41,5 +41,11 @@ target_link_libraries(testReadAutomata ${LIBS})
 add_executable(testWriteAutomata ${TEST_DIR}/testWriteAutomata.c)
 target_link_libraries(testWriteAutomata ${LIBS})
 
-add_executable(testIntegrity ${TEST_DIR}/testIntegrity.c)
-target_link_libraries(testIntegrity ${LIBS})
+add_executable(testIntegrity1 ${TEST_DIR}/testIntegrity1.c)
+target_link_libraries(testIntegrity1 ${LIBS})
+
+add_executable(testIntegrity2 ${TEST_DIR}/testIntegrity2.c)
+target_link_libraries(testIntegrity2 ${LIBS})
+
+add_executable(testIntegrity3 ${TEST_DIR}/testIntegrity3.c)
+target_link_libraries(testIntegrity3 ${LIBS})
